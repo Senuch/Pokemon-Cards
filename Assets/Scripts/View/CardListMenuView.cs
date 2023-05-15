@@ -26,8 +26,46 @@ namespace View
                 pokemonCardPrefab);
         }
 
-        public void RenderView(List<Pokemon> data) { }
+        public void RenderView(List<Pokemon> data)
+        {
+            if (data.Count == 0)
+            {
+                return;
+            }
 
-        private void CleanupView() { }
+            int startDataIndex = 0;
+            if (data.Count < _renderedResources.Count)
+            {
+                CleanupView();
+            }
+
+            foreach (var card in _renderedResources)
+            {
+                if (startDataIndex == data.Count)
+                {
+                    break;
+                }
+
+                card.Refresh(data[startDataIndex++]);
+                card.EnableView();
+            }
+
+            for (int i = startDataIndex; i < data.Count; i++)
+            {
+                var cardView = _cardViewResourcePool.GetResource();
+                cardView.Init(data[i], _cardViewResourcePool);
+                cardView.EnableView();
+
+                _renderedResources.Add(cardView);
+            }
+        }
+
+        private void CleanupView()
+        {
+            foreach (var poolResource in _renderedResources)
+            {
+                poolResource.DisableView();
+            }
+        }
     }
 }
