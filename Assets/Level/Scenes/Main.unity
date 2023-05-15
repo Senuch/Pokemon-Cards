@@ -210,6 +210,7 @@ GameObject:
   - component: {fileID: 412454827}
   - component: {fileID: 412454826}
   - component: {fileID: 412454825}
+  - component: {fileID: 412454830}
   - component: {fileID: 412454829}
   m_Layer: 5
   m_Name: UI
@@ -317,6 +318,19 @@ MonoBehaviour:
   previous: {fileID: 1595171236}
   pokemonCardPrefab: {fileID: 8117486239320856607, guid: a31159a41c8ad964087a69f6f9480d5a, type: 3}
   pokeCardMenuDisplay: {fileID: 1472803972}
+--- !u!114 &412454830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412454824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89f6a10be0e003d4c9880832972d4db8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  view: {fileID: 412454829}
 --- !u!1 &476127507
 GameObject:
   m_ObjectHideFlags: 0
