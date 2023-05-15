@@ -47,16 +47,41 @@ namespace Controller
             _pokemonData.Sort((a, b) => b.CompareTo(a));
             int renderRange = _pokemonData.Count < 28 ? _pokemonData.Count : 28;
             _menuView.RenderView(_pokemonData.GetRange(0, renderRange));
+
+            if (_pokemonData.Count > 28)
+            {
+                _menuView.next.interactable = true;
+            }
         }
 
         private void OnNext()
         {
-            throw new System.NotImplementedException();
+            int nextPage = _currentPage + 1;
+            int renderCount = nextPage * 28 <= _pokemonData.Count ? 28 : _pokemonData.Count - (_currentPage * 28);
+            _menuView.RenderView(_pokemonData.GetRange(_currentPage * 28, renderCount));
+            _currentPage += 1;
+
+            if (_currentPage * 28 >= _pokemonData.Count)
+            {
+                _menuView.next.interactable = false;
+            }
+
+            _menuView.previous.interactable = true;
         }
 
         private void OnPrevious()
         {
-            throw new System.NotImplementedException();
+            int prevPage = _currentPage - 1;
+            int renderCount = prevPage * 28;
+            _menuView.RenderView(_pokemonData.GetRange( prevPage is 1 ? 0 : renderCount - 28, 28));
+            _currentPage -= 1;
+
+            if (_currentPage == 1)
+            {
+                _menuView.previous.interactable = false;
+            }
+
+            _menuView.next.interactable = true;
         }
     }
 }
