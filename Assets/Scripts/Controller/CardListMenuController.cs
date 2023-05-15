@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Core.Networking;
 using Model;
-using UnityEngine;
+using Newtonsoft.Json;
 using View;
 
 namespace Controller
@@ -40,7 +40,13 @@ namespace Controller
 
         private void OnDataLoaded(IResponse response)
         {
-            Debug.Log("Request Success");
+            if(!response.Success) return;
+
+            Pokemon pokemon = JsonConvert.DeserializeObject<Pokemon>((string)response.Context["DATA"]);
+            _pokemonData.Add(pokemon);
+            _pokemonData.Sort((a, b) => b.CompareTo(a));
+            int renderRange = _pokemonData.Count < 28 ? _pokemonData.Count : 28;
+            _menuView.RenderView(_pokemonData.GetRange(0, renderRange));
         }
 
         private void OnNext()
