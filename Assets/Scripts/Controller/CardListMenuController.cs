@@ -26,7 +26,7 @@ namespace Controller
 
         private void LoadNetworkData()
         {
-            // TODO: Replace with named based get requests.
+            // TODO: Replace with name based get requests.
             for (int i = 1; i <= 120; i++)
             {
                 #pragma warning disable CS4014
