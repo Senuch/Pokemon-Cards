@@ -6,22 +6,22 @@ namespace Core.Networking
     {
         public RequestHandler Next { private get; set; }
 
-        public async Task<IResponse> Handle(IRequest request, IResponse contextResponse = null)
+        public async Task<IResponse> Handle(IRequest request, IResponse response = null)
         {
-            var response = await Process(request, contextResponse);
-            if (!response.Success)
+            var result = await Process(request, response);
+            if (!result.Success)
             {
-                return response;
+                return result;
             }
 
             if (Next is not null)
             {
-                response = await Next.Handle(request, response);
+                result = await Next.Handle(request, result);
             }
 
-            return response;
+            return result;
         }
 
-        protected abstract Task<IResponse> Process(IRequest request, IResponse contextResponse = null);
+        protected abstract Task<IResponse> Process(IRequest request, IResponse response = null);
     }
 }

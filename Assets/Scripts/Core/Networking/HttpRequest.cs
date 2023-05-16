@@ -1,12 +1,14 @@
-﻿namespace Core.Networking
+﻿using System;
+
+namespace Core.Networking
 {
     public class HttpRequest : IRequest
     {
-        public string URL { get; private set; }
+        public Uri Uri { get; private set; }
 
         public HttpRequest(string url)
         {
-            URL = url;
+            Uri = new Uri(url);
         }
     }
 }

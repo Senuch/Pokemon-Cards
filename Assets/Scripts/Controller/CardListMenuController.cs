@@ -30,7 +30,7 @@ namespace Controller
             for (int i = 1; i <= 120; i++)
             {
                 #pragma warning disable CS4014
-                RestClient.Instance.Get(
+                RestClient.Get(
                 #pragma warning restore CS4014
                     $"https://pokeapi.co/api/v2/pokemon/{i}",
                     (OnDataLoaded),
@@ -44,7 +44,8 @@ namespace Controller
         {
             if(!response.Success) return;
 
-            Pokemon pokemon = JsonConvert.DeserializeObject<Pokemon>((string)response.Context["DATA"]);
+            var httpResponse = response as HttpResponse;
+            Pokemon pokemon = JsonConvert.DeserializeObject<Pokemon>(httpResponse!.Data);
             _pokemonData.Add(pokemon);
             _pokemonData.Sort((a, b) => b.CompareTo(a));
             int renderRange = _pokemonData.Count < 28 ? _pokemonData.Count : 28;
