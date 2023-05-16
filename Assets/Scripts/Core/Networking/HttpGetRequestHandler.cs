@@ -5,38 +5,35 @@ namespace Core.Networking
 {
     public class HttpGetRequestHandler : RequestHandler
     {
-        protected override async Task<IResponse> Process(IRequest request, IResponse contextResponse = null)
+        protected override async Task<IResponse> Process(IRequest request, IResponse response = null)
         {
-            HttpRequest webRequest = request as HttpRequest;
-
-            if (contextResponse is HttpResponse { CacheHit: true } cacheResponse)
+            var httpRequest = request as HttpRequest;
+            if (response is HttpResponse { CacheHit: true } cacheResponse)
             {
-                cacheResponse.Context.Add("DATA", cacheResponse.CacheData);
                 return cacheResponse;
             }
 
-            using var www = UnityWebRequest.Get(webRequest!.URL);
+            using var www = UnityWebRequest.Get(httpRequest!.Uri.ToString());
+            // TODO: !!Optional!! can be refactored for dynamic headers
             www.SetRequestHeader("Content-Type", "application/json");
             var operation = www.SendWebRequest();
-
             while (!operation.isDone)
             {
                 await Task.Yield();
             }
 
-            var response = contextResponse ?? new HttpResponse();
-
+            var httpResponse = response as HttpResponse ?? new HttpResponse();
             if (www.result is UnityWebRequest.Result.Success)
             {
-                response.Success = true;
-                response.Context.Add("DATA", www.downloadHandler.text);
-                response.Context.Add("RESPONSE-CODE", www.responseCode);
+                httpResponse.Success = true;
+                httpResponse.Data = www.downloadHandler.text;
+                httpResponse.ResponseCode = www.responseCode;
             }
             else
             {
-                response.Success = false;
-                response.Context.Add("ERROR", www.error);
-                response.Context.Add("RESPONSE-CODE", www.responseCode);
+                httpResponse.Success = false;
+                httpResponse.Error = www.error;
+                httpResponse.ResponseCode = www.responseCode;
             }
 
             return response;

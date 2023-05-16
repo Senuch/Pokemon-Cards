@@ -1,35 +1,25 @@
 using System.Threading.Tasks;
 using System.IO;
-using System.Threading;
 using UnityEngine;
 
 namespace Core.Networking
 {
     public class HttpPostFlightRequestHandler : RequestHandler
     {
-        protected override async Task<IResponse> Process(IRequest request, IResponse contextResponse = null)
+        protected override async Task<IResponse> Process(IRequest request, IResponse response = null)
         {
-            if (contextResponse is HttpResponse { CacheHit: false })
+            if (response is not HttpResponse { CacheHit: false } httpResponse) return response;
+            var data = httpResponse.Data;
+            var httpRequest = request as HttpRequest;
+            var path = Application.persistentDataPath + "/network-cache" + httpRequest!.Uri.LocalPath;
+
+            if (!Directory.Exists(path))
             {
-                string data = contextResponse.Context["DATA"] as string;
-                var httpRequest = request as HttpRequest;
-                string pokemonName = GetPokemonName(httpRequest!.URL);
-                string path = Application.persistentDataPath + "/pokemon/";
-
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                await File.WriteAllTextAsync(path + pokemonName,data, CancellationToken.None);
+                Directory.CreateDirectory(path);
             }
+            await File.WriteAllTextAsync(path + "/data.bin",data);
 
-            return contextResponse;
-        }
-
-        private string GetPokemonName(string url)
-        {
-            var request = url.Split('/');
-            return request[^1];
+            return response;
         }
     }
 }

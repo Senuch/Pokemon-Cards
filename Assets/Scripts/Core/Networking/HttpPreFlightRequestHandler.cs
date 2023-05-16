@@ -6,31 +6,24 @@ namespace Core.Networking
 {
     public class HttpPreFlightRequestHandler : RequestHandler
     {
-        protected override async Task<IResponse> Process(IRequest request, IResponse contextResponse = null)
+        protected override async Task<IResponse> Process(IRequest request, IResponse response = null)
         {
             var httpRequest = request as HttpRequest;
-            var response = new HttpResponse();
-            string pokemonName = GetPokemonName(httpRequest!.URL);
-            string path = Application.persistentDataPath + "/pokemon/" + pokemonName;
+            var httpResponse = response as HttpResponse ?? new HttpResponse();
+            var path = Application.persistentDataPath + "/network-cache" + httpRequest!.Uri.LocalPath + "/data.bin";
 
-            response.CacheHit = true;
-            response.Success = true;
+            httpResponse.CacheHit = true;
+            httpResponse.Success = true;
             if (!File.Exists(path))
             {
-                response.CacheHit = false;
-                return response;
+                httpResponse.CacheHit = false;
+                return httpResponse;
             }
 
-            string data = await File.ReadAllTextAsync(path);
-            response.CacheData = data;
+            var data = await File.ReadAllTextAsync(path);
+            httpResponse.Data = data;
 
-            return response;
-        }
-
-        private string GetPokemonName(string url)
-        {
-            var request = url.Split('/');
-            return request[^1];
+            return httpResponse;
         }
     }
 }

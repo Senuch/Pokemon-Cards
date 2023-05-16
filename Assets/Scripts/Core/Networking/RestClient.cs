@@ -3,26 +3,9 @@ using System.Threading.Tasks;
 
 namespace Core.Networking
 {
-    public class RestClient
+    public static class RestClient
     {
-        private static RestClient _instance;
-
-        public static RestClient Instance
-        {
-            get
-            {
-                if (_instance is null)
-                {
-                    _instance = new RestClient();
-                }
-
-                return _instance;
-            }
-        }
-
-        private RestClient(){}
-
-        public async Task Get(string url, Action<IResponse> onCompleted,params RequestHandler[] handlers)
+        public static async Task Get(string url, Action<IResponse> onCompleted,params RequestHandler[] handlers)
         {
             var request = new HttpRequest(url);
             switch (handlers.Length)
