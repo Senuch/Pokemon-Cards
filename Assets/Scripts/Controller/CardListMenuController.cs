@@ -34,7 +34,9 @@ namespace Controller
                 #pragma warning restore CS4014
                     $"https://pokeapi.co/api/v2/pokemon/{i}",
                     (OnDataLoaded),
-                    new HttpGetRequestHandler());
+                    new HttpPreFlightRequestHandler(),
+                    new HttpGetRequestHandler(),
+                    new HttpPostFlightRequestHandler());
             }
         }
 
