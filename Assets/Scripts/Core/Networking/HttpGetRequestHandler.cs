@@ -9,6 +9,12 @@ namespace Core.Networking
         {
             HttpRequest webRequest = request as HttpRequest;
 
+            if (contextResponse is HttpResponse { CacheHit: true } cacheResponse)
+            {
+                cacheResponse.Context.Add("DATA", cacheResponse.CacheData);
+                return cacheResponse;
+            }
+
             using var www = UnityWebRequest.Get(webRequest!.URL);
             www.SetRequestHeader("Content-Type", "application/json");
             var operation = www.SendWebRequest();
