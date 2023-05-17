@@ -2,27 +2,19 @@ using Core.Pooling;
 using Model;
 using TMPro;
 using UnityEngine;
+#pragma warning disable CS0108, CS0114
 
 namespace View
 {
-    public class CardView : MonoBehaviour, IResource<Pokemon, CardView>
+    public class CardView : MonoBehaviour, IResource<Pokemon>
     {
         [SerializeField] private TextMeshProUGUI name;
         [SerializeField] private TextMeshProUGUI baseExperience;
 
-        public ResourcePool<IResource<Pokemon, CardView>> PoolInstance { get; set; }
-
-        public void Init(Pokemon data, ResourcePool<IResource<Pokemon, CardView>> pool)
+        public void Init(Pokemon data)
         {
-            PoolInstance = pool;
             UpdateData(data);
             DisableView();
-        }
-
-        public void PoolBack()
-        {
-            DisableView();
-            PoolInstance.PoolBack(this);
         }
 
         public void Refresh(Pokemon data)

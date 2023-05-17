@@ -31,7 +31,7 @@ namespace Controller
         private void LoadNetworkData()
         {
             // TODO: Replace with name based get requests.
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= 36; i++)
             {
                 GetPokemonData($"https://pokeapi.co/api/v2/pokemon/{i}");
             }
@@ -87,13 +87,15 @@ namespace Controller
 
         private void RenderPokemonData(string data)
         {
-            Pokemon pokemon = JsonConvert.DeserializeObject<Pokemon>(data);
+            var pokemon = JsonConvert.DeserializeObject<Pokemon>(data);
             _pokemonData.Add(pokemon);
             _pokemonData.Sort((a, b) => b.CompareTo(a));
-            int renderRange = _pokemonData.Count < 28 ? _pokemonData.Count : 28;
+            int renderRange = _pokemonData.Count < Configuration.Configurations.PerPageCardCount
+                ? _pokemonData.Count
+                : Configuration.Configurations.PerPageCardCount;
             _menuView.RenderView(_pokemonData.GetRange(0, renderRange));
 
-            if (_pokemonData.Count > 28)
+            if (_pokemonData.Count > Configuration.Configurations.PerPageCardCount)
             {
                 _menuView.next.interactable = true;
             }
@@ -102,11 +104,13 @@ namespace Controller
         private void OnNext()
         {
             int nextPage = _currentPage + 1;
-            int renderCount = nextPage * 28 <= _pokemonData.Count ? 28 : _pokemonData.Count - (_currentPage * 28);
-            _menuView.RenderView(_pokemonData.GetRange(_currentPage * 28, renderCount));
+            int renderCount = nextPage * Configuration.Configurations.PerPageCardCount <= _pokemonData.Count
+                ? Configuration.Configurations.PerPageCardCount
+                : _pokemonData.Count - (_currentPage * Configuration.Configurations.PerPageCardCount);
+            _menuView.RenderView(_pokemonData.GetRange(_currentPage * Configuration.Configurations.PerPageCardCount, renderCount));
             _currentPage += 1;
 
-            if (_currentPage * 28 >= _pokemonData.Count)
+            if (_currentPage * Configuration.Configurations.PerPageCardCount >= _pokemonData.Count)
             {
                 _menuView.next.interactable = false;
             }
@@ -117,8 +121,10 @@ namespace Controller
         private void OnPrevious()
         {
             int prevPage = _currentPage - 1;
-            int renderCount = prevPage * 28;
-            _menuView.RenderView(_pokemonData.GetRange( prevPage is 1 ? 0 : renderCount - 28, 28));
+            int renderCount = prevPage * Configuration.Configurations.PerPageCardCount;
+            _menuView.RenderView(_pokemonData.GetRange(
+                prevPage is 1 ? 0 : renderCount - Configuration.Configurations.PerPageCardCount,
+                Configuration.Configurations.PerPageCardCount));
             _currentPage -= 1;
 
             if (_currentPage == 1)

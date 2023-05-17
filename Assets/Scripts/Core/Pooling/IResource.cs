@@ -1,11 +1,8 @@
 namespace Core.Pooling
 {
-    public interface IResource<TData, TResource>
+    public interface IResource<in TData>
     {
-        // TODO: Simplify the IResource interface.
-        public ResourcePool<IResource<TData, TResource>> PoolInstance { get; set; }
-        public void Init(TData data, ResourcePool<IResource<TData, TResource>> pool);
-        public void PoolBack();
+        public void Init(TData data);
         public void Refresh(TData data);
         public void EnableView();
         public void DisableView();
