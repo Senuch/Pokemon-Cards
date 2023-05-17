@@ -1,13 +1,31 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Core.Networking
 {
     public static class RestClient
     {
-        public static async Task Get(string url, Action<IResponse> onCompleted,params RequestHandler[] handlers)
+        public static async void Get(
+            string url,
+            Action<IResponse> onCompleted = null,
+            params RequestHandler[] handlers)
         {
-            var request = new HttpRequest(url);
+            await Get(
+                url,
+                new List<(string name, string value)>{("Content-Type", "application/json")},
+                onCompleted,
+                handlers);
+        }
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static async Task Get(
+            string url,
+            List<(string name, string value)> headers,
+            Action<IResponse> onCompleted = null,
+            params RequestHandler[] handlers)
+        {
+            var request = new HttpRequest(url, headers);
             switch (handlers.Length)
             {
                 case 0:

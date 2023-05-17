@@ -1,4 +1,5 @@
 using Controller;
+using Core.Networking;
 using UnityEngine;
 using View;
 
@@ -12,6 +13,9 @@ namespace Manager
 
         private void Awake()
         {
+#pragma warning disable CS4014
+            Internet.StartConnectionCheckService();
+#pragma warning restore CS4014
             _controller = new CardListMenuController(view);
         }
     }

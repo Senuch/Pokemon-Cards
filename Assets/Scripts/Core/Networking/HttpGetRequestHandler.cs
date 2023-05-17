@@ -10,12 +10,16 @@ namespace Core.Networking
             var httpRequest = request as HttpRequest;
             if (response is HttpResponse { CacheHit: true } cacheResponse)
             {
+                cacheResponse.Request = httpRequest;
                 return cacheResponse;
             }
 
             using var www = UnityWebRequest.Get(httpRequest!.Uri.ToString());
-            // TODO: !!Optional!! can be refactored for dynamic headers
-            www.SetRequestHeader("Content-Type", "application/json");
+            foreach (var header in httpRequest.Headers)
+            {
+                www.SetRequestHeader(header.name, header.value);
+            }
+
             var operation = www.SendWebRequest();
             while (!operation.isDone)
             {
@@ -36,7 +40,8 @@ namespace Core.Networking
                 httpResponse.ResponseCode = www.responseCode;
             }
 
-            return response;
+            httpResponse.Request = httpRequest;
+            return httpResponse;
         }
     }
 }

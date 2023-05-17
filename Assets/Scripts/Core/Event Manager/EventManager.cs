@@ -8,18 +8,7 @@ namespace Core.Event_Manager
         public delegate void EventCallback(params object[] args);
         private readonly Dictionary<string, EventCallback> _events = new ();
 
-        public static EventManager Instance
-        {
-            get
-            {
-                if (_instance is null)
-                {
-                    _instance = new EventManager();
-                }
-
-                return _instance;
-            }
-        }
+        public static EventManager Instance => _instance ??= new EventManager();
 
         private EventManager(){}
 
