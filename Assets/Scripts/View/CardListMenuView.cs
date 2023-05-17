@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Core.Pooling;
 using Model;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ namespace View
         public Button previous;
         public GameObject pokemonCardPrefab;
         public GameObject pokeCardMenuDisplay;
+        public TextMeshProUGUI internetStatusText;
 
         private ResourcePool<IResource<Pokemon, CardView>> _cardViewResourcePool;
         private readonly List<IResource<Pokemon, CardView>> _renderedResources = new();
