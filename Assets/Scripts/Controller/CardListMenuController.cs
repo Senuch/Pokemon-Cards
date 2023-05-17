@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Core.Networking;
 using Model;
 using Newtonsoft.Json;
+using UnityEngine;
 using View;
 
 namespace Controller
@@ -40,11 +41,19 @@ namespace Controller
         {
             if (Internet.IsConnected)
             {
+                _menuView.internetStatusText.text = "Internet Connected";
+                _menuView.internetStatusText.color = Color.green;
+
                 while (_retryRequests.Count > 0)
                 {
                     HttpRequest request = _retryRequests.Dequeue();
                     GetPokemonData(request.Uri.AbsoluteUri);
                 }
+            }
+            else
+            {
+                _menuView.internetStatusText.text = "Internet Disconnected";
+                _menuView.internetStatusText.color = Color.red;
             }
         }
 
