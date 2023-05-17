@@ -7,11 +7,12 @@ namespace Model
     {
         [JsonProperty(PropertyName = "base_experience")]
         public int BaseExperience { get; set; }
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public string Name { get; set; }
 
         public int CompareTo(object other)
         {
-            Pokemon otherTemp = other as Pokemon;
+            var otherTemp = other as Pokemon;
             if (ReferenceEquals(this, other)) return 0;
             if (ReferenceEquals(null, other)) return 1;
             var baseExperienceComparison = BaseExperience.CompareTo(otherTemp!.BaseExperience);

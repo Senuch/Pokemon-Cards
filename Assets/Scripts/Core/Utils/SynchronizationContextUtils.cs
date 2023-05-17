@@ -40,7 +40,7 @@ namespace Core.Utils
                 return;
             }
 
-            object newContext = constructor.Invoke(new object[] { Thread.CurrentThread.ManagedThreadId });
+            var newContext = constructor.Invoke(new object[] { Thread.CurrentThread.ManagedThreadId });
             SynchronizationContext.SetSynchronizationContext(newContext as SynchronizationContext);
         }
     }

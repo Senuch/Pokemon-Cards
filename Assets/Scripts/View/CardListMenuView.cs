@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Core.Pooling;
 using Model;
 using TMPro;
@@ -15,15 +16,13 @@ namespace View
         public GameObject pokeCardMenuDisplay;
         public TextMeshProUGUI internetStatusText;
 
-        private ResourcePool<IResource<Pokemon, CardView>> _cardViewResourcePool;
-        private readonly List<IResource<Pokemon, CardView>> _renderedResources = new();
-
-        private const int RenderLimit = 28;
+        private ResourcePool<IResource<Pokemon>> _cardViewResourcePool;
+        private readonly List<IResource<Pokemon>> _renderedResources = new();
 
         public void Init()
         {
-            _cardViewResourcePool = new ResourcePool<IResource<Pokemon, CardView>>(
-                RenderLimit,
+            _cardViewResourcePool = new ResourcePool<IResource<Pokemon>>(
+                Configuration.Configurations.PerPageCardCount,
                 pokeCardMenuDisplay,
                 pokemonCardPrefab);
         }
@@ -41,13 +40,8 @@ namespace View
                 CleanupView();
             }
 
-            foreach (var card in _renderedResources)
+            foreach (var card in _renderedResources.TakeWhile(card => startDataIndex != data.Count))
             {
-                if (startDataIndex == data.Count)
-                {
-                    break;
-                }
-
                 card.Refresh(data[startDataIndex++]);
                 card.EnableView();
             }
@@ -55,7 +49,7 @@ namespace View
             for (int i = startDataIndex; i < data.Count; i++)
             {
                 var cardView = _cardViewResourcePool.GetResource();
-                cardView.Init(data[i], _cardViewResourcePool);
+                cardView.Init(data[i]);
                 cardView.EnableView();
 
                 _renderedResources.Add(cardView);

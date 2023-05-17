@@ -11,6 +11,7 @@ namespace Core.Pooling
         private readonly List<TResource> _resources = new();
         private readonly GameObject _parentGameObject;
         private readonly GameObject _prefab;
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private int InstanceCount { get; }
         private bool AutoScale { get; }
 
