@@ -1,0 +1,10 @@
+charizard
+blastoise
+venusaur
+pidgeot
+butterfree
+beedrill
+raticate
+charmeleon
+wartortle
+ivysaur
