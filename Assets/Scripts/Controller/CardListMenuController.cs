@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Core.Networking;
 using Model;
 using Newtonsoft.Json;
-using UnityEngine;
 using View;
 
 namespace Controller
@@ -14,7 +14,7 @@ namespace Controller
         private readonly Queue<HttpRequest> _retryRequests = new();
         private int _currentPage = 1;
 
-        public CardListMenuController(CardListMenuView menuView)
+        public CardListMenuController(CardListMenuView menuView, List<string> input)
         {
             _menuView = menuView;
             _menuView.next.onClick.AddListener(OnNext);
@@ -23,37 +23,63 @@ namespace Controller
             _menuView.previous.interactable = false;
 
             Internet.ConnectionStatusChangeEvent(OnConnectionStatusChanged);
-
-            _menuView.Init();
-            LoadNetworkData();
+            Init(input);
         }
 
-        private void LoadNetworkData()
+        private void Init(List<string> input)
         {
-            // TODO: Replace with name based get requests.
-            for (int i = 1; i <= 36; i++)
+            List<string> sanitizedInput = GetSanitizedInput(input);
+            if (sanitizedInput.Count is 0)
             {
-                GetPokemonData($"https://pokeapi.co/api/v2/pokemon/{i}");
+                _menuView.DisplayMessage("Provided input is invalid!", false);
+            }
+            else
+            {
+                _menuView.Init();
+                LoadNetworkData(sanitizedInput);
+            }
+        }
+
+        private List<string> GetSanitizedInput(List<string> input)
+        {
+            var pokemonNames = new HashSet<string>();
+            if (input.Count is 0)
+            {
+                _menuView.DisplayMessage("No input provided!", false);
+                return new List<string>();
+            }
+
+            foreach(string pokemonName in input)
+            {
+                if (pokemonName is null) continue;
+                var name = pokemonName.Trim();
+                name = name.ToLower();
+                bool isValid = name.Length > 0 && name.All(char.IsLetter) && !pokemonNames.Contains(name);
+                if (isValid)
+                {
+                    pokemonNames.Add(name);
+                }
+            }
+
+            return pokemonNames.ToList();
+        }
+
+        private void LoadNetworkData(List<string> input)
+        {
+            foreach (string pokemonName in input)
+            {
+                GetPokemonData($"https://pokeapi.co/api/v2/pokemon/{pokemonName}");
             }
         }
 
         private void OnConnectionStatusChanged(params object[] args)
         {
-            if (Internet.IsConnected)
+            _menuView.UpdateConnectionStatus(Internet.IsConnected);
+            if (!Internet.IsConnected) return;
+            while (_retryRequests.Count > 0)
             {
-                _menuView.internetStatusText.text = "Internet Connected";
-                _menuView.internetStatusText.color = Color.green;
-
-                while (_retryRequests.Count > 0)
-                {
-                    HttpRequest request = _retryRequests.Dequeue();
-                    GetPokemonData(request.Uri.AbsoluteUri);
-                }
-            }
-            else
-            {
-                _menuView.internetStatusText.text = "Internet Disconnected";
-                _menuView.internetStatusText.color = Color.red;
+                HttpRequest request = _retryRequests.Dequeue();
+                GetPokemonData(request.Uri.AbsoluteUri);
             }
         }
 
@@ -88,6 +114,7 @@ namespace Controller
         private void RenderPokemonData(string data)
         {
             var pokemon = JsonConvert.DeserializeObject<Pokemon>(data);
+
             _pokemonData.Add(pokemon);
             _pokemonData.Sort((a, b) => b.CompareTo(a));
             int renderRange = _pokemonData.Count < Configuration.Configurations.PerPageCardCount

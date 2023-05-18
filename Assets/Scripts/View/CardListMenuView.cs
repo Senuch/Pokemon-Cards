@@ -14,13 +14,19 @@ namespace View
         public Button previous;
         public GameObject pokemonCardPrefab;
         public GameObject pokeCardMenuDisplay;
+        public GameObject cardContainer;
+        public GameObject controlContainer;
+        public GameObject dialogueBoxContainer;
         public TextMeshProUGUI internetStatusText;
+        public TextMeshProUGUI dialogueBoxText;
 
         private ResourcePool<IResource<Pokemon>> _cardViewResourcePool;
         private readonly List<IResource<Pokemon>> _renderedResources = new();
 
         public void Init()
         {
+            cardContainer.SetActive(true);
+            controlContainer.SetActive(true);
             _cardViewResourcePool = new ResourcePool<IResource<Pokemon>>(
                 Configuration.Configurations.PerPageCardCount,
                 pokeCardMenuDisplay,
@@ -40,7 +46,7 @@ namespace View
                 CleanupView();
             }
 
-            foreach (var card in _renderedResources.TakeWhile(card => startDataIndex != data.Count))
+            foreach (var card in _renderedResources.TakeWhile(_ => startDataIndex != data.Count))
             {
                 card.Refresh(data[startDataIndex++]);
                 card.EnableView();
@@ -62,6 +68,22 @@ namespace View
             {
                 poolResource.DisableView();
             }
+        }
+
+        public void DisplayMessage(string message, bool isSuccess)
+        {
+            Color color = isSuccess ? Color.green : Color.red;
+            dialogueBoxText.text = message;
+            dialogueBoxText.color = color;
+
+            dialogueBoxContainer.SetActive(true);
+        }
+
+        public void UpdateConnectionStatus(bool isConnected)
+        {
+            Color color = isConnected ? Color.green : Color.red;
+            internetStatusText.text = isConnected ? "Internet Connected" : "Internet Disconnected";
+            internetStatusText.color = color;
         }
     }
 }

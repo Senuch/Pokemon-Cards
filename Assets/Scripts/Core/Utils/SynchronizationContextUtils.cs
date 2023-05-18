@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Core.Utils
 {
+#if UNITY_EDITOR
     /// <summary>
     /// Editor only script for handling tasks on exiting play mode.
     /// </summary>
@@ -44,4 +45,5 @@ namespace Core.Utils
             SynchronizationContext.SetSynchronizationContext(newContext as SynchronizationContext);
         }
     }
+#endif
 }
